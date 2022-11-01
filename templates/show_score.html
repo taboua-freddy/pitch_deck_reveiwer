@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+{% block css %}
+{{ super() }}
+
+<style>
+    .nav-justified .nav-item {
+        flex-basis: auto !important;
+        margin-bottom: 5px;
+    }
+</style>
+
+{% endblock %}
+
+
+<div class="row">
+    <div class="col">
+        <embed style="position: sticky;top: 120px;" src="{{url_for('static', filename='files/'+filename)}}" width="100%"
+            height="650px" />
+    </div>
+    <div class="col">
+        <div class="card-box">
+            <h4 class="header-title mb-4">Results</h4>
+
+            <ul class="nav nav-pills navtab-bg nav-justified" >
+                <li class="nav-item">
+                    <a href="#mistakes" data-toggle="tab" aria-expanded="true" class="nav-link active">
+                        <span class="d-inline-block d-sm-none"><i class="fas fa-home"></i></span>
+                        <span class="d-none d-sm-inline-block">Mistakes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#repetition" data-toggle="tab" aria-expanded="false" class="nav-link ">
+                        <span class="d-inline-block d-sm-none"><i class="far fa-user"></i></span>
+                        <span class="d-none d-sm-inline-block">Repetitions</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#score" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        <span class="d-inline-block d-sm-none"><i class="far fa-envelope"></i></span>
+                        <span class="d-none d-sm-inline-block">Score</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#ratio" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        <span class="d-inline-block d-sm-none"><i class="far fa-envelope"></i></span>
+                        <span class="d-none d-sm-inline-block">Ratio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#font_form" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        <span class="d-inline-block d-sm-none"><i class="far fa-envelope"></i></span>
+                        <span class="d-none d-sm-inline-block">Font & Form</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#word_cloud" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        <span class="d-inline-block d-sm-none"><i class="far fa-envelope"></i></span>
+                        <span class="d-none d-sm-inline-block">Word Cloud</span>
+                    </a>
+                </li>
+                <li class="nav-item" >
+                    <a href="#composition" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        <span class="d-inline-block d-sm-none"><i class="far fa-envelope"></i></span>
+                        <span class="d-none d-sm-inline-block">Presentation Composition</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#consistency_images" data-toggle="tab" aria-expanded="false" class="nav-link">
+                        <span class="d-inline-block d-sm-none"><i class="far fa-envelope"></i></span>
+                        <span class="d-none d-sm-inline-block">Consistency of images</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="mistakes">
+                    {% if data["evaluation"]["total_mistakes"]==0 %}
+                    <div class="card-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="header-title">No Mistake found</h4>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% for slide_name,slide_data in data["data"].items() if slide_data["mistakes"]|length > 0 %}
+
+                    <div class="card-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="header-title text-warning">{{slide_name}}</h4>
+                            </div>
+                            <div class="col">
+                                <h4 class="header-title text-right">Total : {{ slide_data["mistakes"]|length }}</h4>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Mistake</th>
+                                        <th>Type</th>
+                                        <th>Suggestion</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for mistake in slide_data["mistakes"] %}
+                                    <tr>
+                                        <td class="text-danger">{{mistake["word"]}}</td>
+                                        <td>{{mistake["type"]}}</td>
+                                        <td class="text-success">{{mistake["suggestion"]}}</td>
+                                    </tr>
+                                    {%endfor%}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    {%endfor%}
+                </div>
+                <div class="tab-pane fade" id="repetition">
+
+                    {% if data["evaluation"]["total_repetitions"] > 0 %}
+                    <div class="card-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="header-title"></h4>
+                            </div>
+                            <div class="col">
+                                <h4 class="header-title text-right">Total
+                                    :{{ data["evaluation"]["total_repetitions"] }}
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-warning">Slides</th>
+                                        <th class="text-warning">Repetitions in sentence</th>
+                                        <th class="text-warning">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for slide_name,slide_data in data["data"].items() if slide_data["repetions_sentence"]["total"]>0 %}
+
+                                    <tr>
+                                        <td>{{slide_name}}</td>
+                                        {% set my_string = [] %}
+                                        {% for rep in slide_data["repetions_sentence"]["words"] %}
+                                        {% for w,r in rep.items() %}
+                                        {% if  my_string.append( (w ~ '=' ~ r|e ~ " ;")) %}
+
+                                        {% endif %}
+
+
+                                        {% endfor %}
+
+                                        {% endfor %}
+                                        <td>{{my_string|join(" ")}}</td>
+                                        <td>{{slide_data["repetions_sentence"]["total"]}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    {% else %}
+
+                    <div class="card-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="header-title">No repetitive word found</h4>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+                <div class="tab-pane fade" id="score">
+                    <h4 class="header-title mt-0 mb-2">Score</h4>
+
+                    <div class="mt-1">
+                        <div class="float-left" dir="ltr">
+                            {% for param in score_names_colors %}
+                                {% set height = 60 %}
+                                {% if loop.index == 1 %}
+                                    {% set height = 150 %}
+                                {% endif %}
+                                <div class="col-md-6 col-xl-3">
+                                    <div class="card" style="border:0px !important;">
+                                        <input data-plugin="knob" data-width="{{height}}" data-height="{{height}}"
+                                            data-fgColor="{{param["color"]}} " data-bgColor="#ecf0f1"
+                                            value=" {{ param["score"] }}" data-skin="tron" data-angleOffset="180" data-readOnly=true
+                                            data-thickness=".15" />
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title text-warning">{{param["label"]|capitalize}}</h5>
+                                    </div>
+                                </div>
+                                
+                            {% endfor %}
+                            
+                        </div>
+
+                        <div class="float-right">
+                            <div class="row ">
+                                <div class="col">
+                                    <div class="text-left">
+                                        <p class="mb-0 text-danger">Mistakes found: {{data["evaluation"]["total_mistakes"]}}</p>
+                                        <p class="mb-0 text-danger">Repetions words: {{data["evaluation"]["total_repetitions"]}}</p>
+                                        <p class="mb-0 text-danger">Missing Titles : {{data["evaluation"]["misssing_titles"]|length}}</p>
+                                        <p class="mb-0 text-danger">Problems with Font & Form : {{data["evaluation"]["n_font_form"]}}</p>
+                                        <p class="mb-0 text-danger">Number of Charts : {{n_charts}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    {% if data["evaluation"]["unknowns"]|length > 0 %}
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card-box">
+                                <h4 class="header-title">Unknowns</h4>
+                                <p class="text-muted font-13">These words were <code>ignored*</code> during the spelling
+                                    check
+                                </p>
+
+                                <div class="button-list">
+                                    {% for word in data["evaluation"]["unknowns"] %}
+                                    <button type="button" class="btn btn-bordered-warning waves-effect width-md
+                                        waves-light">{{ word|e }}</button>
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="tab-pane fade" id="ratio">
+                    <h4 class="header-title mt-0 mb-2">Ratio texts-images</h4>
+                    <div class="table-responsive">
+
+                        <canvas id="ratioChart" width="400" height="400"></canvas>
+
+                    </div>
+
+                </div>
+                <div class="tab-pane fade" id="font_form">
+                    <h4 class="header-title mt-0 mb-2">Font & Form</h4>
+                    {% for slide_name,slide_data in data["data"].items() if slide_data["font_form_data"]|length > 0 %}
+
+                    <div class="card-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="header-title text-warning">{{slide_name}}</h4>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-warning">Checking</th>
+                                        <th class="text-warning">Recommendation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ch,rec in slide_data["font_form_data"].items() %}
+                                    <tr>
+                                        <td> {{ch}} </td>
+                                        {% if rec["good"] %}
+                                               <td class="text-success">{{rec["text"]}}</td>
+                                        {% else %}
+                                               <td class="text-danger">{{rec["text"]}}</td>
+                                        {% endif %}
+                                        
+                                    </tr>
+                                    {%endfor%}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    {%endfor%}
+
+                </div>
+
+                <div class="tab-pane fade" id="word_cloud">
+                    <h4 class="header-title mt-0 mb-2">Word Cloud</h4>
+                    <div class="card-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="header-title text-warning">{{slide_name}}</h4>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <img class="card-img-top img-fluid" src="{{ word_cloud_img }}" alt="Word cloud">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="tab-pane fade" id="composition">
+                    <h4 class="header-title mt-0 mb-2">Presentation Composition</h4>
+                    
+                    {% if data["evaluation"]["misssing_titles"]|length > 0 %}
+                    <div class="card-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="header-title">You should include these titles in your document</h4>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0">
+                                <tbody>
+                                    {% for title in data["evaluation"]["misssing_titles"] %}
+                                        <tr>
+                                            <td class="text-danger">{{title}}</td>
+                                        </tr>
+                                    {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                   
+
+                    {% else %}
+                        <h4 class="header-title">Your titles look good</h4>
+                    {% endif %}
+                    
+
+                </div>
+
+                <div class="tab-pane fade" id="consistency_images">
+                    <h4 class="header-title mt-0 mb-2">Check the consistency between the images and the keywords given
+                    </h4>
+
+                    <div class="card-box">
+                        <form class="form-horizontal" role="form" method="post" id="keywords_form"
+                            action="{{url_for('image_consistency', filename=filename)}}">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" for="simpleinput">Keywords</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="keywords" id="keywords" class="form-control"
+                                        placeholder="Enter any keywords">
+                                </div>
+                            </div>
+                            <button id="sub_keywords" class="btn btn-warning" type="button">
+                                <span class="spinner-border-sm mr-1" role="status"
+                                    aria-hidden="true"></span>
+                                <b class="text">Submit</b>
+                            </button>
+                        </form>
+
+                    </div>
+                    <div id="display"></div>
+
+                </div>
+            </div>
+        </div>
+
+        {{data["misssing_titles"]}}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<script type="text/javascript">
+
+
+    $(document).ready(function (i){
+        
+
+
+        $("#sub_keywords").on("click", function (e) {
+            e.preventDefault();
+            const url = $("#keywords_form").attr("action");
+            const data = $('#keywords_form').serialize()
+            if ($("#keywords").val().length == 0){
+                toastr.warning('You should write something inside the field')
+            }
+            else{
+                ff(url,data)
+            }
+        });
+
+        function ff(url,data){
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: data,
+                dataType: 'HTML',
+                beforeSend: function() {
+                    add_spinner()
+                    toastr.warning('A message will be display at the end of the process')
+            },
+            success: function(data){
+                $("#display").html(data)
+                toastr.success('The process is finished !')
+                remove_spinner()
+            },fail:function(){
+                remove_spinner()
+            }
+            });
+            
+        }
+
+        function remove_spinner() { 
+            $("#sub_keywords").prop("disabled",false)
+            $("#sub_keywords span").removeClass("spinner-border")
+            $("#sub_keywords b").text("Submit")
+        }
+
+        function add_spinner() { 
+            $("#sub_keywords").prop("disabled",true)
+            $("#sub_keywords span").addClass("spinner-border")
+            $("#sub_keywords b").text("Loading...")
+        }
+
+        
+    });
+
+    var n_slides = {{data["data"]|length }}
+
+    var ratio_text = {{ratio_text}};
+
+    var ratio_image = {{ratio_image}};
+
+    var labels = []
+    for (let i = 1; i <= n_slides; i++) {
+        labels.push("Slide "+i)
+    }
+    
+
+    var ctx = document.getElementById('ratioChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                    label: 'Text Ratio',
+                    data: ratio_text,
+                    stack: 'Stack 0',
+                    backgroundColor: ['rgba(75, 123, 236,1.0)'],
+                },
+                {
+                    label: 'Image Ratio',
+                    data: ratio_image,
+                    stack: 'Stack 1',
+                    backgroundColor: ["rgba(254, 211, 48,1.0)"],
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                intersect: false,
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- App favicon -->
+
+    <!-- App css -->
+    <link href="{{ url_for("static","assets/css/bootstrap.min.css") }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for("static","assets/css/icons.min.css") }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for("static","assets/css/app.min.css") }}" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+    <!-- Navigation Bar-->
+    <header id="topnav">
+
+        <!-- Topbar Start -->
+        <div class="navbar-custom">
+            <div class="container-fluid">
+                <ul class="list-unstyled topnav-menu float-right mb-0">
+
+                    <li class="dropdown notification-list">
+                        <!-- Mobile menu toggle-->
+                        <a class="navbar-toggle nav-link">
+                            <div class="lines">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </a>
+                        <!-- End mobile menu toggle-->
+                    </li>
+
+                </ul>
+
+                <!-- LOGO -->
+                <div class="logo-box">
+                    <a href="{{ url_for("index") }}" class="logo text-center">
+                        <span class="logo-lg">
+                            <img src="{{ url_for("static","assets/images/logo-light.png") }}" alt="" height="20">
+                            <!-- <span class="logo-lg-text-light">Xeria</span> -->
+                        </span>
+                        <span class="logo-sm">
+                            <!-- <span class="logo-sm-text-dark">X</span> -->
+                            <img src="{{ url_for("static","assets/images/logo-sm.png") }}" alt="" height="24">
+                        </span>
+                    </a>
+                </div>
+
+
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <!-- end Topbar -->
+
+        <div class="topbar-menu">
+            <div class="container-fluid">
+                <div id="navigation">
+                    <!-- Navigation Menu-->
+                    <ul class="navigation-menu">
+
+                        <li class="has-submenu">
+                            <a href="#"> <i class="remixicon-dashboard-line"></i>Home <div class="arrow-down"></div>
+                            </a>
+                            <ul class="submenu megamenu">
+                                <li>
+                                    <ul>
+                                        <li>
+                                            <a href="pages-starter.html">Starter</a>
+                                        </li>
+                                        <li>
+                                            <a href="pages-login.html">Log In</a>
+                                        </li>
+
+                                    </ul>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                    </ul>
+                    <!-- End navigation menu -->
+
+                    <div class="clearfix"></div>
+                </div>
+                <!-- end #navigation -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end navbar-custom -->
+
+    </header>
+    <!-- End Navigation Bar-->
+
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
+
+    <div class="wrapper">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+
+                        <h4 class="page-title">Starter</h4>
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            {% block body %}{% endblock %}
+
+
+        </div> <!-- end container -->
+    </div>
+    <!-- end wrapper -->
+
+    <!-- ============================================================== -->
+    <!-- End Page content -->
+    <!-- ============================================================== -->
+
+    <!-- Footer Start -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    2016 - 2019 &copy; Minton theme by <a href="">Coderthemes</a>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+    <!-- end Footer -->
+
+    <!-- Right bar overlay-->
+    <div class="rightbar-overlay"></div>
+
+    <!-- Vendor js -->
+    <script src="{{ url_for("static","assets/js/vendor.min.js") }}"></script>
+
+    <!-- App js -->
+    <script src="{{ url_for("static","assets/js/app.min.js") }}"></script>
+
+</body>
+
+</html>
